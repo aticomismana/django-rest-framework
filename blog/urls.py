@@ -3,7 +3,7 @@ from . import views
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r'posts', views.PostViewSet)
+router.register(r'postsDefaultRouter', views.PostViewSet)
 
 urlpatterns = [
     re_path(r'^$', views.post_list, name='post_list'),
@@ -14,4 +14,7 @@ urlpatterns = [
     #url(r'^posts/$', views.PostViewSet, name='posts'),
     re_path(r'^api/', include(router.urls)),
     re_path(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
+    re_path(r'^api/post/$', views.post_list_api),
+    re_path(r'^api/post/(?P<pk>\d+)', views.post_detail_api),
 ]

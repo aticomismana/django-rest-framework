@@ -8,6 +8,13 @@ from .forms import PostForm
 from rest_framework import viewsets
 from .serializers import PostSerializer
 
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+
+import json
+
 def post_list(request):
 	posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
 	return render(request, 'blog/post_list.html', {'posts': posts})
@@ -51,3 +58,25 @@ class PostViewSet(viewsets.ModelViewSet):
     #queryset = Post.objects.all().order_by('published_date')
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+
+@csrf_exempt
+def post_list_api(request):
+    if request.method == 'GET':
+        posts = Post.objects.all()
+        serializer = PostSerializer(posts, many=True)
+        serializer_json = json.dumps(serializer.data, ensure_ascii=False, default=str, indent=None)
+        #return JsonResponse(serializer_json, safe=False)
+        return HttpResponse(serializer_json, content_type='application/json')
+
+@csrf_exempt
+def post_detail_api(request, pk):
+    # try:
+    #     post = Post.objects.get(pk=pk)
+    # except Post.DoesNotExist:
+    #     return HttpResponse(status=404)
+
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == 'GET':
+        serializer = PostSerializer(post)
+        serializer_json = json.dumps(serializer.data, ensure_ascii=False)
+        return HttpResponse(serializer_json, content_type='application/json')
