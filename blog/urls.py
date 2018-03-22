@@ -2,6 +2,8 @@ from django.urls import include, path, re_path
 from . import views
 from rest_framework import routers
 
+from django.contrib.auth import views as auth_views
+
 router = routers.DefaultRouter()
 router.register(r'postsDefaultRouter', views.PostViewSet)
 
@@ -17,4 +19,9 @@ urlpatterns = [
 
     re_path(r'^api/post/$', views.post_list_api),
     re_path(r'^api/post/(?P<pk>\d+)', views.post_detail_api),
+
+    # authentication
+    #path('login/', auth_views.LoginView.as_view()),
+    path('login/', auth_views.login, {'template_name': 'blog/login.html'}, name='login'),
+    path('logout/', auth_views.logout, {'next_page': '/'}, name='logout'),
 ]
